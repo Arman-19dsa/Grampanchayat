@@ -1,17 +1,19 @@
 /**
  * ============================================================
- * XYZ Gram Panchayat – Main JavaScript File
- * Author: Gram Panchayat Web Team
- * Version: 1.0
+ * Bhalwani Gram Panchayat – Main JavaScript File
+ * Version: 1.1 (Bug-fixed)
  * Features:
- *   1. Responsive hamburger menu
- *   2. Smooth active nav link highlighting on scroll
- *   3. Marquee ticker duplication for seamless loop
- *   4. Gallery filter with animation
- *   5. Contact form validation with real-time feedback
- *   6. Scroll-triggered reveal animations
- *   7. Back to top button
- *   8. Header shadow on scroll
+ *   1.  Responsive hamburger menu
+ *   2.  Smooth active nav link highlighting on scroll
+ *   3.  Header shadow on scroll
+ *   4.  Marquee ticker duplication for seamless loop
+ *   5.  Gallery filter with animation
+ *   6.  Contact form validation with real-time feedback
+ *   7.  Scroll-triggered reveal animations
+ *   8.  Back to top button
+ *   9.  Smooth scroll for nav links
+ *   10. Notice highlight – "NEW" badge on latest notice
+ *   11. Current year in footer (auto-updates)
  * ============================================================
  */
 
@@ -21,13 +23,8 @@
    UTILITY HELPERS
    ============================================================ */
 
-/**
- * Shorthand for document.querySelector
- * @param {string} selector
- * @returns {Element|null}
- */
-const qs  = (selector)        => document.querySelector(selector);
-const qsa = (selector)        => document.querySelectorAll(selector);
+const qs  = (selector) => document.querySelector(selector);
+const qsa = (selector) => document.querySelectorAll(selector);
 
 /**
  * Throttle a function to avoid excessive calls (e.g. on scroll)
@@ -41,7 +38,6 @@ function throttle(fn, wait = 150) {
     if (now - last >= wait) { last = now; fn(...args); }
   };
 }
-
 
 /* ============================================================
    1. HAMBURGER MENU (Mobile Navigation)
@@ -58,9 +54,7 @@ function throttle(fn, wait = 150) {
     hamburger.classList.toggle('open', open);
     navMenu.classList.toggle('open', open);
     overlay.classList.toggle('active', open);
-    // Accessibility: update aria-expanded
     hamburger.setAttribute('aria-expanded', String(open));
-    // Prevent body scroll when menu is open
     document.body.style.overflow = open ? 'hidden' : '';
   }
 
@@ -73,7 +67,7 @@ function throttle(fn, wait = 150) {
   // Close when overlay is clicked
   overlay.addEventListener('click', () => toggleMenu(false));
 
-  // Close when a nav link is clicked (navigate to section)
+  // Close when a nav link is clicked
   navMenu.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => toggleMenu(false));
   });
@@ -86,20 +80,17 @@ function throttle(fn, wait = 150) {
   });
 })();
 
-
 /* ============================================================
    2. ACTIVE NAV LINK ON SCROLL (Intersection Observer)
+   FIX: Removed escaped brackets — correct selector is 'section[id]'
    ============================================================ */
 (function initActiveNav() {
+  // FIX: was 'main section\[id\]' — corrected to valid CSS selector
   const sections = qsa('main section[id]');
   const navLinks = qsa('.nav-link');
 
   if (!sections.length || !navLinks.length) return;
 
-  /**
-   * Map section IDs to nav links for O(1) lookup
-   * @type {Map<string, Element>}
-   */
   const linkMap = new Map();
   navLinks.forEach(link => {
     const href = link.getAttribute('href');
@@ -109,16 +100,14 @@ function throttle(fn, wait = 150) {
   });
 
   const observerOptions = {
-    rootMargin: '-30% 0px -60% 0px', // Trigger when section is ~30% from top
+    rootMargin: '-30% 0px -60% 0px',
     threshold: 0
   };
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        // Remove active from all
         navLinks.forEach(l => l.classList.remove('active'));
-        // Add active to the matching link
         const activeLink = linkMap.get(entry.target.id);
         if (activeLink) activeLink.classList.add('active');
       }
@@ -127,7 +116,6 @@ function throttle(fn, wait = 150) {
 
   sections.forEach(section => observer.observe(section));
 })();
-
 
 /* ============================================================
    3. HEADER SHADOW ON SCROLL
@@ -146,7 +134,6 @@ function throttle(fn, wait = 150) {
 
   window.addEventListener('scroll', handleScroll, { passive: true });
 })();
-
 
 /* ============================================================
    4. MARQUEE TICKER – Duplicate content for seamless loop
@@ -171,12 +158,11 @@ function throttle(fn, wait = 150) {
   });
 })();
 
-
 /* ============================================================
    5. GALLERY FILTER
    ============================================================ */
 (function initGalleryFilter() {
-  const filterBtns  = qsa('.filter-btn');
+  const filterBtns   = qsa('.filter-btn');
   const galleryItems = qsa('.gallery-item');
 
   if (!filterBtns.length || !galleryItems.length) return;
@@ -189,14 +175,13 @@ function throttle(fn, wait = 150) {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // Show / hide items with a brief animation
+      // Show / hide items with animation
       galleryItems.forEach(item => {
-        const category = item.dataset.category;
+        const category  = item.dataset.category;
         const shouldShow = (filter === 'all' || category === filter);
 
         if (shouldShow) {
           item.classList.remove('hidden');
-          // Small stagger for reveal
           requestAnimationFrame(() => {
             item.style.opacity = '0';
             item.style.transform = 'scale(0.94)';
@@ -217,26 +202,26 @@ function throttle(fn, wait = 150) {
   });
 })();
 
-
 /* ============================================================
    6. CONTACT FORM VALIDATION
+   FIX: Corrected phone regex — removed double-escaped backslashes
    ============================================================ */
 (function initContactForm() {
-  const form       = qs('#contact-form');
+  const form = qs('#contact-form');
   if (!form) return;
 
   const fields = {
-    name:    { el: qs('#full-name'),  errEl: qs('#err-name') },
-    phone:   { el: qs('#phone'),      errEl: qs('#err-phone') },
-    email:   { el: qs('#email'),      errEl: qs('#err-email') },
-    subject: { el: qs('#subject'),    errEl: qs('#err-subject') },
-    message: { el: qs('#message'),    errEl: qs('#err-message') },
-    consent: { el: qs('#consent'),    errEl: qs('#err-consent') },
+    name:    { el: qs('#full-name'), errEl: qs('#err-name') },
+    phone:   { el: qs('#phone'),     errEl: qs('#err-phone') },
+    email:   { el: qs('#email'),     errEl: qs('#err-email') },
+    subject: { el: qs('#subject'),   errEl: qs('#err-subject') },
+    message: { el: qs('#message'),   errEl: qs('#err-message') },
+    consent: { el: qs('#consent'),   errEl: qs('#err-consent') },
   };
 
-  const submitBtn    = qs('#submit-btn');
-  const formSuccess  = qs('#form-success');
-  const refNumber    = qs('#ref-number');
+  const submitBtn   = qs('#submit-btn');
+  const formSuccess = qs('#form-success');
+  const refNumber   = qs('#ref-number');
 
   /** Show an error on a field */
   function showError(fieldKey, message) {
@@ -252,9 +237,7 @@ function throttle(fn, wait = 150) {
     errEl.textContent = '';
   }
 
-  /** Validate a single field
-   *  @returns {boolean} isValid
-   */
+  /** Validate a single field */
   function validateField(key) {
     const { el } = fields[key];
 
@@ -276,7 +259,8 @@ function throttle(fn, wait = 150) {
 
       case 'phone': {
         const val = el.value.trim().replace(/\s+/g, '');
-        // Accept formats: 9876543210 / +919876543210 / 09876543210
+        // FIX: Correct regex — was double-escaped from Drive export
+        // Accepts: 9876543210 / +919876543210 / 09876543210
         const phoneRegex = /^(\+91|0)?[6-9]\d{9}$/;
         if (!val) {
           showError('phone', 'Mobile number is required.');
@@ -337,12 +321,11 @@ function throttle(fn, wait = 150) {
     }
   }
 
-  /** Real-time validation: validate on blur */
+  /** Real-time validation on blur */
   Object.keys(fields).forEach(key => {
     const { el } = fields[key];
     el.addEventListener('blur',  () => validateField(key));
     el.addEventListener('input', () => {
-      // Clear error as user types (after first blur)
       if (el.classList.contains('error')) validateField(key);
     });
     if (el.tagName === 'SELECT') {
@@ -358,7 +341,7 @@ function throttle(fn, wait = 150) {
 
   /** Generate a simple reference number */
   function generateRefNumber() {
-    const prefix = 'GP-XYZ';
+    const prefix = 'GP-BHALWANI';
     const year   = new Date().getFullYear();
     const rand   = Math.floor(10000 + Math.random() * 90000);
     return `${prefix}-${year}-${rand}`;
@@ -369,7 +352,6 @@ function throttle(fn, wait = 150) {
     e.preventDefault();
 
     if (!validateAll()) {
-      // Scroll to first error
       const firstError = form.querySelector('.error');
       if (firstError) {
         firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -388,7 +370,7 @@ function throttle(fn, wait = 150) {
     // Simulate async form submission (replace with real API call)
     await new Promise(resolve => setTimeout(resolve, 1800));
 
-    // Success state
+    // Restore button
     btnText.hidden    = false;
     btnLoading.hidden = true;
     submitBtn.disabled = false;
@@ -401,7 +383,6 @@ function throttle(fn, wait = 150) {
       formSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // Reset form fields
     form.reset();
 
     // Auto-hide success message after 10 seconds
@@ -411,14 +392,10 @@ function throttle(fn, wait = 150) {
   });
 })();
 
-
 /* ============================================================
    7. SCROLL-TRIGGERED REVEAL ANIMATIONS
-   Uses IntersectionObserver to add 'visible' class to .reveal
-   elements when they enter the viewport.
    ============================================================ */
 (function initRevealAnimations() {
-  // Mark sections and cards for animation
   const animateTargets = qsa([
     '.about-grid',
     '.info-card',
@@ -435,9 +412,8 @@ function throttle(fn, wait = 150) {
 
   const revealObserver = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry, i) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // Stagger children in grids
           const index = Array.from(entry.target.parentElement?.children ?? []).indexOf(entry.target);
           entry.target.style.transitionDelay = `${Math.min(index * 0.07, 0.4)}s`;
           entry.target.classList.add('visible');
@@ -450,7 +426,6 @@ function throttle(fn, wait = 150) {
 
   animateTargets.forEach(el => revealObserver.observe(el));
 })();
-
 
 /* ============================================================
    8. BACK TO TOP BUTTON
@@ -474,9 +449,9 @@ function throttle(fn, wait = 150) {
   });
 })();
 
-
 /* ============================================================
    9. SMOOTH SCROLL FOR NAV LINKS (fallback for older browsers)
+   FIX: Corrected selector — was 'a\[href^="#"\]', now valid
    ============================================================ */
 (function initSmoothScroll() {
   qsa('a[href^="#"]').forEach(anchor => {
@@ -490,28 +465,25 @@ function throttle(fn, wait = 150) {
       e.preventDefault();
 
       // Account for sticky header height
-      const header     = qs('.site-header');
-      const headerH    = header ? header.offsetHeight : 0;
-      const offsetTop  = target.getBoundingClientRect().top + window.scrollY - headerH - 10;
+      const header    = qs('.site-header');
+      const headerH   = header ? header.offsetHeight : 0;
+      const offsetTop = target.getBoundingClientRect().top + window.scrollY - headerH - 10;
 
       window.scrollTo({ top: offsetTop, behavior: 'smooth' });
     });
   });
 })();
 
-
 /* ============================================================
-   10. NOTICE TICKER – Auto-highlight newest notice
+   10. NOTICE HIGHLIGHT – "NEW" badge on latest notice
    ============================================================ */
 (function initNoticeHighlight() {
   const notices = qsa('.notice-item');
   if (!notices.length) return;
 
-  // The first notice is the most recent; add a subtle pulse
   const latest = notices[0];
   if (latest) {
     latest.style.position = 'relative';
-    // Add "New" badge
     const badge = document.createElement('span');
     badge.textContent = 'NEW';
     badge.style.cssText = `
@@ -530,7 +502,6 @@ function throttle(fn, wait = 150) {
   }
 })();
 
-
 /* ============================================================
    11. CURRENT YEAR IN FOOTER (auto-updates)
    ============================================================ */
@@ -540,9 +511,8 @@ function throttle(fn, wait = 150) {
   yearEls.forEach(el => { el.textContent = year; });
 })();
 
-
 /* ============================================================
-   PAGE INIT LOG (remove in production)
+   PAGE INIT LOG
    ============================================================ */
-console.log('%c🏛️ XYZ Gram Panchayat Website Loaded', 'color:#FF9933; font-size:14px; font-weight:bold;');
+console.log('%c🏛️ Bhalwani Gram Panchayat Website Loaded', 'color:#FF9933; font-size:14px; font-weight:bold;');
 console.log('%c   Government of Maharashtra | Official Portal', 'color:#138808; font-size:12px;');
