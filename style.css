@@ -1,18 +1,18 @@
 /* ============================================================
-   XYZ Gram Panchayat – Official Website Stylesheet
+   Bhalwani Gram Panchayat – Official Website Stylesheet
    Author: Gram Panchayat Web Team
-   Version: 1.0
-   Description: Professional government-themed responsive CSS
+   Version: 1.1 (Bug-fixed)
    Color Palette:
      Saffron:  #FF9933
      Green:    #138808
-     Navy:     #000080 (Ashoka Chakra blue)
+     Navy:     #000080
      White:    #FFFFFF
      Light BG: #F5F7FA
      Dark:     #1a1a2e
    ============================================================ */
 
 /* ===== 1. CSS VARIABLES & RESET ===== */
+
 :root {
   /* Brand colors */
   --saffron:        #FF9933;
@@ -77,6 +77,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 address { font-style: normal; }
 
 /* ===== 2. UTILITY CLASSES ===== */
+
 .container {
   max-width: var(--container-max);
   margin: 0 auto;
@@ -177,8 +178,8 @@ address { font-style: normal; }
   margin: 10px auto 0;
 }
 
-
 /* ===== 3. UTILITY BAR ===== */
+
 .utility-bar {
   background: var(--navy);
   color: rgba(255,255,255,0.85);
@@ -211,8 +212,8 @@ address { font-style: normal; }
 }
 .utility-right a:hover { color: var(--saffron); }
 
-
 /* ===== 4. HEADER & NAVIGATION ===== */
+
 .site-header {
   background: var(--white);
   position: sticky;
@@ -243,15 +244,19 @@ address { font-style: normal; }
 }
 
 .logo-emblem {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
 }
 
-.emblem-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+.logo-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,80,0.15);
+  background: var(--white);
+  padding: 2px;
 }
 
 .logo-text {
@@ -353,8 +358,8 @@ address { font-style: normal; }
 }
 .nav-overlay.active { display: block; }
 
-
 /* ===== 5. HERO SECTION ===== */
+
 .hero {
   position: relative;
   min-height: 92vh;
@@ -363,12 +368,7 @@ address { font-style: normal; }
   justify-content: center;
   text-align: center;
   overflow: hidden;
-
-  /* Rich layered background */
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(19,136,8,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,153,51,0.3) 0%, transparent 70%),
-    linear-gradient(160deg, #0a0a23 0%, #0d1b4b 40%, #0f2b0f 100%);
+  background: #0a0a23;
 }
 
 /* Decorative pattern overlay */
@@ -392,6 +392,38 @@ address { font-style: normal; }
       rgba(255,255,255,0.02) 41px
     );
   pointer-events: none;
+  z-index: 0;
+}
+
+/* Hero background image */
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-bg-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0.28;
+  filter: saturate(0.6) brightness(0.7);
+  transition: opacity 0.6s ease;
+}
+
+/* Gradient overlay on top of building image */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(19,136,8,0.30) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 0%,   rgba(255,153,51,0.30) 0%, transparent 70%),
+    linear-gradient(160deg, rgba(10,10,35,0.75) 0%, rgba(13,27,75,0.65) 40%, rgba(15,43,15,0.70) 100%);
+  pointer-events: none;
 }
 
 /* Tricolor top ribbon */
@@ -400,15 +432,22 @@ address { font-style: normal; }
   top: 0; left: 0; right: 0;
   height: 6px;
   display: flex;
+  z-index: 2;
 }
 .tricolor-bar span { flex: 1; }
 .tc-saffron { background: var(--saffron); }
 .tc-white   { background: var(--white); }
 .tc-green   { background: var(--green); }
 
-.hero-content {
+/* Hero content and tricolor above the overlay */
+.hero-content,
+.tricolor-bar,
+.hero-scroll-hint {
   position: relative;
   z-index: 2;
+}
+
+.hero-content {
   max-width: 860px;
   padding: 40px 24px;
   animation: fadeInUp 0.9s ease both;
@@ -531,8 +570,76 @@ address { font-style: normal; }
 }
 .hero-scroll-hint i { font-size: 0.9rem; }
 
+/* ===== 6. BUILDING SHOWCASE ===== */
 
-/* ===== 6. MARQUEE BAR ===== */
+.building-showcase {
+  background: var(--bg-light);
+  padding: 40px 0;
+}
+
+.building-img-wrap {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+}
+
+.building-img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.building-caption {
+  position: absolute;
+  bottom: 16px;
+  left: 40px;
+  background: rgba(0,0,0,0.6);
+  color: var(--white);
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.building-caption i { color: var(--saffron); }
+
+/* ===== 7. NAME BANNER ===== */
+
+.name-banner {
+  background: var(--white);
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.name-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.name-banner-img-wrap {
+  flex-shrink: 0;
+}
+
+.name-banner-img {
+  height: 80px;
+  width: auto;
+  border-radius: var(--radius);
+}
+
+.name-banner-english {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* ===== 8. MARQUEE BAR ===== */
+
 .marquee-bar {
   background: var(--navy);
   color: var(--white);
@@ -593,8 +700,8 @@ address { font-style: normal; }
   font-size: 1rem;
 }
 
+/* ===== 9. ABOUT SECTION ===== */
 
-/* ===== 7. ABOUT SECTION ===== */
 .about-section {
   background: var(--bg-light);
 }
@@ -683,8 +790,8 @@ address { font-style: normal; }
   color: var(--text-dark);
 }
 
+/* ===== 10. MEMBERS SECTION ===== */
 
-/* ===== 8. MEMBERS SECTION ===== */
 .members-section {
   background: var(--white);
 }
@@ -717,7 +824,7 @@ address { font-style: normal; }
   line-height: 1;
 }
 
-.sarpanch-photo { flex-shrink: 0; }
+.sarpanch-photo { flex-shrink: 0; padding-bottom: 12px; }
 
 /* Avatar circles */
 .avatar-circle {
@@ -731,11 +838,21 @@ address { font-style: normal; }
   color: var(--white);
   border: 3px solid var(--white);
   box-shadow: var(--shadow-md);
+  overflow: hidden;
+  flex-shrink: 0;
 }
 .avatar-sarpanch    { background: linear-gradient(135deg, var(--saffron), var(--saffron-dark)); width: 100px; height: 100px; }
 .avatar-up-sarpanch { background: linear-gradient(135deg, var(--green), var(--green-dark)); }
 .avatar-member      { background: linear-gradient(135deg, var(--navy), #1a1a8c); }
 .avatar-secretary   { background: linear-gradient(135deg, #4a4a4a, #2a2a2a); }
+
+/* FIX: member-img fills the avatar circle cleanly */
+.member-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
 .member-role-badge {
   display: inline-block;
@@ -748,6 +865,51 @@ address { font-style: normal; }
   padding: 4px 12px;
   border-radius: 4px;
   margin-bottom: 10px;
+}
+
+.sarpanch-img-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.sarpanch-real-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 50%;
+  border: 4px solid var(--saffron);
+  box-shadow:
+    0 0 0 4px rgba(255,153,51,0.2),
+    0 8px 28px rgba(0,0,0,0.20);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  display: block;
+}
+
+.sarpanch-img-wrap:hover .sarpanch-real-img {
+  transform: scale(1.04);
+  box-shadow:
+    0 0 0 5px rgba(255,153,51,0.35),
+    0 12px 36px rgba(0,0,0,0.28);
+}
+
+.sarpanch-img-wrap::after {
+  content: 'सरपंच';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--saffron);
+  color: var(--white);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  font-family: var(--font-hindi);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
 }
 
 .sarpanch-info h3 {
@@ -796,6 +958,22 @@ address { font-style: normal; }
   border-color: var(--green);
 }
 
+.member-photo-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid var(--saffron);
+  box-shadow: var(--shadow-sm);
+}
+
+.member-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .member-details { flex: 1; min-width: 0; }
 
 .member-role {
@@ -827,8 +1005,8 @@ address { font-style: normal; }
 .member-phone i { margin-right: 5px; }
 .member-phone:hover { color: var(--saffron-dark); }
 
+/* ===== 11. SCHEMES SECTION ===== */
 
-/* ===== 9. SCHEMES SECTION ===== */
 .schemes-section {
   background: var(--bg-light);
 }
@@ -913,8 +1091,8 @@ address { font-style: normal; }
 .scheme-link:hover { color: var(--saffron-dark); }
 .scheme-link:hover i { transform: translateX(4px); }
 
+/* ===== 12. NOTICES SECTION ===== */
 
-/* ===== 10. NOTICES SECTION ===== */
 .notices-section {
   background: var(--white);
 }
@@ -1055,8 +1233,11 @@ address { font-style: normal; }
 .quick-links a:hover { color: var(--saffron-dark); }
 .quick-links a i { font-size: 0.75rem; color: var(--saffron); }
 
+/* ===== 13. GALLERY SECTION ===== */
 
-/* ===== 11. GALLERY SECTION ===== */
+/* FIX: Removed duplicate .gallery-grid and .filter-btn definitions.
+   Unified into one clean, consistent set of rules. */
+
 .gallery-section {
   background: var(--bg-light);
 }
@@ -1080,66 +1261,45 @@ address { font-style: normal; }
   transition: var(--transition);
   cursor: pointer;
 }
-.filter-btn:hover { border-color: var(--saffron); color: var(--saffron-dark); }
+.filter-btn:hover {
+  border-color: var(--saffron);
+  color: var(--saffron-dark);
+}
 .filter-btn.active {
   background: var(--saffron);
   border-color: var(--saffron);
   color: var(--white);
 }
 
-/* Masonry-style gallery grid */
+/* Gallery grid */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 200px;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .gallery-item {
-  border-radius: var(--radius);
   overflow: hidden;
-  position: relative;
+  border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
-.gallery-item.gallery-wide  { grid-column: span 2; }
-.gallery-item.gallery-tall  { grid-row: span 2; }
-.gallery-item.hidden        { display: none; }
-.gallery-item:hover         { transform: scale(1.02); box-shadow: var(--shadow-lg); z-index: 2; }
+.gallery-item.hidden { display: none; }
+.gallery-item:hover  { transform: scale(1.02); box-shadow: var(--shadow-lg); z-index: 2; }
 
-.gallery-img {
+.gallery-item img {
   width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  transition: transform 0.3s ease;
+  display: block;
 }
+.gallery-item img:hover { transform: scale(1.05); }
 
-.gallery-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  display: flex;
-  align-items: flex-end;
-  padding: 16px;
-}
-.gallery-item:hover .gallery-overlay { opacity: 1; }
-.gallery-overlay span {
-  color: var(--white);
-  font-size: 0.82rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* ===== 14. CONTACT SECTION ===== */
 
-.gallery-caption {
-  display: none; /* Hidden visually, accessible to screen readers */
-}
-
-
-/* ===== 12. CONTACT SECTION ===== */
 .contact-section {
   background: var(--white);
 }
@@ -1200,6 +1360,11 @@ address { font-style: normal; }
   color: var(--text-body);
   font-weight: 500;
 }
+.contact-details a {
+  color: var(--navy);
+  transition: color 0.2s;
+}
+.contact-details a:hover { color: var(--saffron-dark); }
 
 .map-placeholder {
   background: linear-gradient(135deg, #e8eaf6, #e8f5e9);
@@ -1301,8 +1466,8 @@ address { font-style: normal; }
 }
 .form-success i { color: var(--green); margin-top: 2px; flex-shrink: 0; font-size: 1.1rem; }
 
+/* ===== 15. FOOTER ===== */
 
-/* ===== 13. FOOTER ===== */
 .site-footer {
   background: var(--text-dark);
   color: rgba(255,255,255,0.8);
@@ -1325,7 +1490,6 @@ address { font-style: normal; }
   gap: 12px;
   margin-bottom: 18px;
 }
-.footer-emblem { font-size: 2rem; }
 .footer-logo strong {
   display: block;
   color: var(--white);
@@ -1335,6 +1499,16 @@ address { font-style: normal; }
 .footer-logo small {
   font-size: 0.72rem;
   color: rgba(255,255,255,0.5);
+}
+
+.footer-logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.1);
+  padding: 2px;
+  flex-shrink: 0;
 }
 
 .footer-brand p {
@@ -1413,22 +1587,65 @@ address { font-style: normal; }
 /* Footer bottom */
 .footer-bottom {
   padding: 18px 0;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0,0,0,0.28);
 }
 .footer-bottom-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 14px;
   font-size: 0.78rem;
   color: rgba(255,255,255,0.4);
 }
 .footer-bottom a { color: rgba(255,255,255,0.55); margin: 0 3px; transition: color 0.2s; }
 .footer-bottom a:hover { color: var(--saffron); }
 
+/* QR code block */
+.footer-qr-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  flex-shrink: 0;
+}
 
-/* ===== 14. BACK TO TOP BUTTON ===== */
+.footer-qr-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid rgba(255,153,51,0.45);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  background: var(--white);
+  display: block;
+  image-rendering: crisp-edges;
+}
+
+.footer-qr-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footer-qr-label span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--saffron);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.footer-qr-label small {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
+}
+
+/* ===== 16. BACK TO TOP BUTTON ===== */
+
 .back-to-top {
   position: fixed;
   bottom: 30px;
@@ -1460,8 +1677,8 @@ address { font-style: normal; }
   transform: translateY(-3px);
 }
 
+/* ===== 17. ANIMATIONS ===== */
 
-/* ===== 15. ANIMATIONS ===== */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -1488,8 +1705,8 @@ address { font-style: normal; }
   transform: none;
 }
 
+/* ===== 18. RESPONSIVE – TABLET ===== */
 
-/* ===== 16. RESPONSIVE – TABLET ===== */
 @media (max-width: 1024px) {
   :root { --section-py: 60px; }
 
@@ -1498,8 +1715,6 @@ address { font-style: normal; }
   .footer-top-grid        { grid-template-columns: 1fr 1fr; gap: 32px; }
   .notices-layout         { grid-template-columns: 1fr; }
   .notices-sidebar        { display: grid; grid-template-columns: 1fr 1fr; position: static; }
-  .gallery-grid           { grid-template-columns: repeat(3, 1fr); }
-  .gallery-item.gallery-wide { grid-column: span 2; }
 }
 
 @media (max-width: 900px) {
@@ -1509,7 +1724,8 @@ address { font-style: normal; }
   .schemes-grid { grid-template-columns: 1fr 1fr; }
 }
 
-/* ===== 17. RESPONSIVE – MOBILE ===== */
+/* ===== 19. RESPONSIVE – MOBILE ===== */
+
 @media (max-width: 768px) {
   /* Navigation goes off-canvas */
   .hamburger {
@@ -1567,11 +1783,6 @@ address { font-style: normal; }
   /* Notices sidebar */
   .notices-sidebar { grid-template-columns: 1fr; }
 
-  /* Gallery */
-  .gallery-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 160px; }
-  .gallery-item.gallery-wide { grid-column: span 2; }
-  .gallery-item.gallery-tall { grid-row: span 1; }
-
   /* Contact form */
   .form-row { grid-template-columns: 1fr; }
 
@@ -1582,18 +1793,33 @@ address { font-style: normal; }
   /* Header height */
   .header-inner { height: 68px; }
   .logo-emblem  { width: 48px; height: 48px; }
+  .logo-img     { width: 48px; height: 48px; }
   .logo-main    { font-size: 1.1rem; }
 
   /* Utility bar */
   .utility-right { display: none; }
+
+  /* QR block */
+  .footer-qr-block {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px 20px;
+  }
+  .footer-qr-label { align-items: center; }
 }
 
 @media (max-width: 480px) {
   .hero-cta { flex-direction: column; align-items: center; }
   .hero-cta .btn { width: 100%; max-width: 260px; justify-content: center; }
   .about-info-cards { grid-template-columns: 1fr; }
-  .gallery-grid     { grid-template-columns: 1fr; }
-  .gallery-item.gallery-wide { grid-column: span 1; }
   .sarpanch-contact { flex-direction: column; gap: 8px; align-items: center; }
-  .back-to-top      { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+  .back-to-top { bottom: 16px; right: 16px; width: 40px; height: 40px; }
+}
+
+@media (max-width: 600px) {
+  .footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
 }
